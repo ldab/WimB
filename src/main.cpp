@@ -1,27 +1,21 @@
-#include "Arduino.h"
-#include "Wire.h"
+/*WimB - Where is my bike - Copyright (c) 2018 Leonardo Bispo.  All right reserved.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. */
 
-/* Comment this out to disable prints and save space */
-// #define BLYNK_PRINT SerialUSB
-#define BLYNK_PRINT Serial
-#define TINY_GSM_DEBUG SerialMon
-
-#define TINY_GSM_MODEM_UBLOX
-
-// Set serial for debug console (to the Serial Monitor, speed 115200)
-#define SerialMon Serial
-
-// Set serial for AT commands (to the module) 
-#define SerialAT Serial1
-
-// Default heartbeat interval for GSM is 60
-// If you want override this value, uncomment and set this option:
-//#define BLYNK_HEARTBEAT 30
-
-#include <TinyGsmClient.h>
-#include <BlynkSimpleTinyGSM.h>
-#include <TimeLib.h>
-#include <WidgetRTC.h>
+#include "header.h"
 
 // Your GPRS credentials
 // Leave empty, if missing user or pass
