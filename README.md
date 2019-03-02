@@ -6,8 +6,8 @@ This is a minimalist Blynk App you will 1,800 energy points.
 
 ## Download Blynk App: [Getting Started with Blynk](https://www.blynk.cc/getting-started/)
 
-<li>Download Blynk App:&nbsp;<a href="http://j.mp/blynk_Android" rel="nofollow">http://j.mp/blynk_Android</a>&nbsp;or&nbsp;<a href="http://j.mp/blynk_iOS" rel="nofollow">http://j.mp/blynk_iOS</a></li>
-<li>Touch the QR-code icon and point the camera to the code below
+* Download Blynk App: [](http://j.mp/blynk_Android) [](http://j.mp/blynk_iOS)
+* Touch the QR-code icon and point the camera to the code below
 <ul>
 <li style="text-align: center;"><img src="https://image.ibb.co/gxZFDz/Untitled.png" alt="" width="274" height="98" /></li>
 </ul>
