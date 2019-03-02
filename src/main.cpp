@@ -1,82 +1,105 @@
-/**************************************************************
- *
- * This script tries to auto-detect the baud rate
- * and allows direct AT commands access
- *
- * TinyGSM Getting Started guide:
- *   https://tiny.cc/tinygsm-readme
- *
- **************************************************************/
+#include "Arduino.h"
+#include "Wire.h"
 
-// Select your modem:
-#define TINY_GSM_MODEM_SIM800
-// #define TINY_GSM_MODEM_SIM808
-// #define TINY_GSM_MODEM_SIM900
-// #define TINY_GSM_MODEM_UBLOX
-// #define TINY_GSM_MODEM_BG96
-// #define TINY_GSM_MODEM_A6
-// #define TINY_GSM_MODEM_A7
-// #define TINY_GSM_MODEM_M590
-// #define TINY_GSM_MODEM_ESP8266
-// #define TINY_GSM_MODEM_XBEE
+/* Comment this out to disable prints and save space */
+// #define BLYNK_PRINT SerialUSB
+#define BLYNK_PRINT Serial
+#define TINY_GSM_DEBUG SerialMon
+
+#define TINY_GSM_MODEM_UBLOX
 
 // Set serial for debug console (to the Serial Monitor, speed 115200)
 #define SerialMon Serial
 
-// Set serial for AT commands (to the module)
-// Use Hardware Serial on Mega, Leonardo, Micro
-//#define SerialAT Serial1
+// Set serial for AT commands (to the module) 
+#define SerialAT Serial1
 
-// or Software Serial on Uno, Nano
-#include <SoftwareSerial.h>
-SoftwareSerial SerialAT(2, 3); // RX, TX
+// Default heartbeat interval for GSM is 60
+// If you want override this value, uncomment and set this option:
+//#define BLYNK_HEARTBEAT 30
 
-#define TINY_GSM_DEBUG SerialMon
-
-#include <Arduino.h>
 #include <TinyGsmClient.h>
+#include <BlynkSimpleTinyGSM.h>
+#include <TimeLib.h>
+#include <WidgetRTC.h>
 
-// Module baud rate
-uint32_t rate = 0; // Set to 0 for Auto-Detect
+// Your GPRS credentials
+// Leave empty, if missing user or pass
+const char apn[]  = "YourAPN";
+const char user[] = "";
+const char pass[] = "";
 
-void setup() {
-  // Set console baud rate
-  SerialMon.begin(115200);
-  delay(3000);
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+const char auth[] = "YourAuthToken";
+
+TinyGsm modem(SerialAT);
+
+WidgetMap myMap(V0);
+
+BlynkTimer timer;
+WidgetRTC rtc;
+
+float lat, lon, bat;
+
+int loc;
+
+int active, clear = 0;
+
+BLYNK_CONNECTED() 
+{
+  // Request Blynk server to re-send latest values for all pins
+  Blynk.syncVirtual(V2, V3);
 }
 
-void loop() {
+BLYNK_WRITE(V2)
+{
+  active = param.asInt();
+}
 
-  if (!rate) {
-    rate = TinyGsmAutoBaud(SerialAT);
-  }
+BLYNK_WRITE(V3)
+{
+  clear = param.asInt();
+}
 
-  if (!rate) {
-    SerialMon.println(F("***********************************************************"));
-    SerialMon.println(F(" Module does not respond!"));
-    SerialMon.println(F("   Check your Serial wiring"));
-    SerialMon.println(F("   Check the module is correctly powered and turned on"));
-    SerialMon.println(F("***********************************************************"));
-    delay(30000L);
-    return;
-  }
+void sendCoord()
+{
+  //Send each coordinate with date and time example 15/2 - 16:20
+  String dateTime = String(day()) + "/" + month() + "-" + hour() + ":" + minute();
+  myMap.location(loc, lat, lon, dateTime);
+}
 
-  SerialAT.begin(rate);
+void setup()
+{
+  // Set console baud rate
+  SerialMon.begin(115200);
+  delay(10);
 
-  // Access AT commands from Serial Monitor
-  SerialMon.println(F("***********************************************************"));
-  SerialMon.println(F(" You can now send AT commands"));
-  SerialMon.println(F(" Enter \"AT\" (without quotes), and you should see \"OK\""));
-  SerialMon.println(F(" If it doesn't work, select \"Both NL & CR\" in Serial Monitor"));
-  SerialMon.println(F("***********************************************************"));
+  // Set GSM module baud rate
+  SerialAT.begin(115200);
+  delay(3000);
 
-  while(true) {
-    if (SerialAT.available()) {
-      SerialMon.write(SerialAT.read());
-    }
-    if (SerialMon.available()) {
-      SerialAT.write(SerialMon.read());
-    }
-    delay(0);
-  }
+  // Restart takes quite some time
+  // To skip it, call init() instead of restart()
+  SerialMon.println("Initializing modem...");
+  modem.restart();
+
+  String modemInfo = modem.getModemInfo();
+  SerialMon.print("Modem: ");
+  SerialMon.println(modemInfo);
+
+  // Unlock your SIM card with a PIN
+  //modem.simUnlock("1234");
+
+  Blynk.begin(auth, modem, apn, user, pass);
+
+  rtc.begin();
+
+  timer.setInterval(10000L, sendCoord);
+}
+
+void loop()
+{
+  Blynk.run();
+  timer.run();
 }
