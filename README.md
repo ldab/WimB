@@ -4,6 +4,8 @@ This is a minimalist Blynk App you will 1,800 energy points.
 
 <p>The firmware has been writen using PlatformIO which is a nice, neat IDE, check it out:&nbsp;<a href="https://platformio.org/platformio-ide" rel="nofollow">Learn how to install PlatformIO IDE</a></p>
 
+[![Build Status](https://travis-ci.org/ldab/WimB.svg?branch=master)](https://travis-ci.org/ldab/WimB)
+
 ## Download Blynk App: [Getting Started with Blynk](https://www.blynk.cc/getting-started/)
 
 * Download Blynk App: [](http://j.mp/blynk_Android) [](http://j.mp/blynk_iOS)
