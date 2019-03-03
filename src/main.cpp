@@ -27,6 +27,8 @@ const char pass[] = "";
 // Go to the Project Settings (nut icon).
 const char auth[] = "YourAuthToken";
 
+LIS3DH myIMU; //Default constructor is I2C, addr 0x19.
+
 TinyGsm modem(SerialAT);
 
 WidgetMap myMap(V0);
@@ -88,6 +90,8 @@ void setup()
   Blynk.begin(auth, modem, apn, user, pass);
 
   rtc.begin();
+
+  myIMU.begin();
 
   timer.setInterval(10000L, sendCoord);
 }

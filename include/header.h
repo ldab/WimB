@@ -27,3 +27,5 @@
 #include <BlynkSimpleTinyGSM.h>
 #include <TimeLib.h>
 #include <WidgetRTC.h>
+
+#include "SparkFunLIS3DH.h"

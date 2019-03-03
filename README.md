@@ -19,6 +19,14 @@ This is a minimalist Blynk App you will 1,800 energy points.
 
 * Enjoy my app!
 
+## TODO
+
+* Put device to sleep;
+* Communnicate with SARA-R4
+* Communicate with GNSS;
+* Set interrupts on accelerometer;
+* Finish accelerometer lib
+
 ## Schematic
 
 ![Schematic page 1](./schematic/wimb.png)
@@ -29,6 +37,10 @@ This is a minimalist Blynk App you will 1,800 energy points.
 You can find technical information here: [datasheets](./datasheet)
 
 ## How to start?
+
+
+
+##
 
 Github Shields and Badges created with [Shields.io](https://github.com/badges/shields/)
 
