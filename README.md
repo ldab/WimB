@@ -55,7 +55,7 @@ Bits 6 to 8 defines the timer value unit for the GPRS timer:
 1 1 1 value indicates that the timer is deactivated.
 ```
 
-**The requested extended periodic TAU value(T3412) iscoded as one byte (octet 3) of the GPRS Timer 3 information element coded as bitformat (e.g. "10100001" equals 1 minute).  see the GPRS Timer 2 IE in 3GPP TS 24.008 Table10.5.163a/3GPP TS 24.008 - page 669**
+**The requested extended periodic TAU value(T3412) iscoded as one byte (octet 3) of the GPRS Timer 3 information element coded as bitformat (e.g. "10100001" equals 1 minute).  see the GPRS Timer 3 IE in 3GPP TS 24.008 Table10.5.163a/3GPP TS 24.008 - page 669**
 
 #### Requested_Active_Time - Active/Paging time
 
@@ -72,7 +72,7 @@ Bits
 Other values shall be interpreted as multiples of 1 minute in this version of the protocol. 
 ```
 
-** Requested Active Time value (T3324) iscoded as one byte (octet 3) of the GPRS Timer 3 information element coded as bitformat (e.g. "00100100" equals 4 minutes).  see the GPRS Timer 2 IE in 3GPP TS 24.008 Table10.5.163/3GPP TS 24.008 - page 668**
+**Requested Active Time value (T3324) iscoded as one byte (octet 3) of the GPRS Timer 2 information element coded as bitformat (e.g. "00100100" equals 4 minutes).  see the GPRS Timer 2 IE in 3GPP TS 24.008 Table10.5.163/3GPP TS 24.008 - page 668**
 
 ## Schematic
 
