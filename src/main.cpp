@@ -27,7 +27,7 @@ const char pass[] = "";
 // Go to the Project Settings (nut icon).
 const char auth[] = "YourAuthToken";
 
-LIS3DH myIMU; //Default constructor is I2C, addr 0x19.
+LIS3DH myIMU(0x19); //Default address is 0x19.
 
 TinyGsm modem(SerialAT);
 
@@ -38,9 +38,10 @@ WidgetRTC rtc;
 
 float lat, lon, bat;
 
-int loc;
+int loc, active, clear = 0;
 
-int active, clear = 0;
+uint16_t sampleRate = 1; //HZ - Samples per second - 1, 10, 25, 50, 100, 200, 400, 1600, 5000
+uint8_t accelRange = 2; //Accelerometer range = 2, 4, 8, 16g
 
 BLYNK_CONNECTED() 
 {
@@ -91,7 +92,10 @@ void setup()
 
   rtc.begin();
 
-  myIMU.begin();
+  if( myIMU.begin(sampleRate, 1, 1, 1, accelRange) != 0 )
+  {
+    Serial.print("Failed to initialize IMU.\n");
+  }
 
   timer.setInterval(10000L, sendCoord);
 }

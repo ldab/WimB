@@ -28,4 +28,4 @@
 #include <TimeLib.h>
 #include <WidgetRTC.h>
 
-#include "SparkFunLIS3DH.h"
+#include "lis3dh-motion-detection.h"

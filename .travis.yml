@@ -23,9 +23,16 @@ cache:
     directories:
         - "~/.platformio"
 
+env:
+    - PLATFORMIO_CI_SRC=src/main.cpp
+    
 install:
     - pip install -U platformio
     - platformio update
+    
+    # Time, TinyGSM, Blynk
+    - platformio lib -g install 44 1287 415
+    - platformio lib -g install https://github.com/ldab/lis3dh-motion-detection
 
 script:
-    - platformio run
+    - platformio ci --board=adafruit_trinket_m0 --board=espressif8266
