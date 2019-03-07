@@ -32,4 +32,5 @@ install:
     - platformio lib -g install https://github.com/ldab/lis3dh-motion-detection
 
 script:
-    - platformio ci --board=adafruit_trinket_m0
+    - platformio run
+    
