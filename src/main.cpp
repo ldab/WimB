@@ -170,8 +170,8 @@ void setup()
   //The default analogRead() resolution for these boards is 10 bits, for compatibility.
   // ISSUE: https://forum.arduino.cc/index.php?topic=434775.0
   analogReadResolution(12);
-  analogReference(AR_INTERNAL2V23);                  //Change reference to internal 2.23V
-  pinMode(BATT, INPUT);                          //BAttery connected to PA03 -> Pin AREF / 25
+  analogReference(AR_INTERNAL2V23);              //Change reference to internal 2.23V
+  pinMode(BATT, INPUT);                          //Battery connected to PA03 -> Pin AREF / 25
   batt = float(analogRead(25))*2.23f / 4095 * 2; //calculate battery considerin 1M voltage divider and 12 bits
 
     //IF battery is too low, notify and deep sleep;
@@ -250,15 +250,19 @@ void trackingMode()
 
 void sleepConf()
 {
-  //As this is a crystalless board, few bits need to be changed.
+  // http://infocenter.arm.com/help/topic/com.arm.doc.dui0662b/DUI0662B_cortex_m0p_r0p1_dgug.pdf
   SYSCTRL->OSC32K.reg |=  (SYSCTRL_OSC32K_RUNSTDBY | SYSCTRL_OSC32K_ONDEMAND); // set internal 32k oscillator to run when idle or sleep mode is chosen
 
+  // 15.8.3 Generic Clock Control - http://ww1.microchip.com/downloads/en/DeviceDoc/SAMD21-Family-DataSheet-DS40001882D.pdf#_OPENTOPIC_TOC_PROCESSING_d115e46482
   REG_GCLK_CLKCTRL  |= GCLK_CLKCTRL_ID(GCM_EIC) |   // generic clock multiplexer id for the external interrupt controller
                        GCLK_CLKCTRL_GEN_GCLK1 |     // generic clock 1 which is osc32k
                        GCLK_CLKCTRL_CLKEN;          // enable it
   
   while (GCLK->STATUS.bit.SYNCBUSY);                // write protected, wait for sync
 
+  // May not need it as defined in Line 101 .platformio\packages\framework-arduinosam\cores\adafruit\WInterrupts.c
+  // EExt_Interrupts in = g_APinDescription[PIN_INT1].ulExtInt;
+  // EIC->WAKEUP.reg |= (1 << in);
   EIC->WAKEUP.reg |= EIC_WAKEUP_WAKEUPEN4;          // Set External Interrupt Controller 4
   
   //PM->SLEEP.reg |= PM_SLEEP_IDLE_CPU;  // Enable Idle0 mode - sleep CPU clock only
@@ -266,6 +270,7 @@ void sleepConf()
   //PM->SLEEP.reg |= PM_SLEEP_IDLE_APB; // Idle2 - sleep CPU, AHB, and APB clocks
 
   // It is either Idle mode or Standby mode, not both. 
-  SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;   // Enable Standby or "deep sleep" mode
+  // http://infocenter.arm.com/help/topic/com.arm.doc.dui0662b/DUI0662B_cortex_m0p_r0p1_dgug.pdf#G7.1046307
+  SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;   // Enable Standby = "deep sleep" mode
 
 }

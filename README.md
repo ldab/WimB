@@ -25,12 +25,25 @@ This is a minimalist Blynk App you will 1,800 energy points.
 
 ## TODO
 
-- [ ] Put device to sleep;
+- [x] Put device to sleep;
 - [ ] Communnicate with SARA-R4
 - [x] Set SARA-PSM values
 - [ ] Communicate with GNSS;
-- [ ] Set interrupts on accelerometer;
-- [ ] Finish accelerometer lib
+- [ ] AssistNow AID for GNSS
+- [x] Set interrupts on accelerometer;
+- [x] Finish accelerometer lib
+- [ ] Monitor SARA GPIO in order to detect modem is ready +UGPIOC
+- [ ] Monitor SARA V_INT in order to detect modem ON
+- [ ] Monitor GNSS *something* in order to detect GNSS awake
+
+## SARA-R4 PWR_ON Pin
+
+Low  level  on  the PWR_ON pin,  which  is  normally  set  high  by  an  internal  pull-up,  for  a  valid  time period  when  the applied VCCvoltage  is  within  the  valid  operating  range. The PWR_ON line has to be driven by open drain, open collector or contact switch
+
+Parameter       |Min. |Max.  |Unit|Remarks
+--------------- | --- |----- | -- | ---------------------------------------
+PWR_ON low time |0.15 | 3.20 | s  | Low time to trigger module switch *ON*
+PWR_ON low time |1.5  |      | s  | Low time to trigger module switch *OFF*
 
 ## SARA-R4 PSM - Power Save Mode configuration
 
