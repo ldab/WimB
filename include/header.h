@@ -1,20 +1,21 @@
 #include "Arduino.h"
 #include "Wire.h"
+#include "wiring_private.h"
 
 /* Comment this out to disable prints and save space */
 // #define BLYNK_PRINT SerialUSB
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG
 //#define APP_DEBUG
-#define TINY_GSM_DEBUG SerialMon
+#define TINY_GSM_DEBUG Serial
 
 #define TINY_GSM_MODEM_UBLOX
 
-// Set serial for debug console (to the Serial Monitor, speed 115200)
-#define SerialMon Serial
+//Enable Serial debbug on Serial UART to see IMU registers wrote
+#define SERIAL_DEBUG Serial
 
-// Set serial for AT commands (to the module) 
-#define SerialAT Serial1
+//LIS3DH - IMU operation mode
+#define NORMAL_MODE
 
 // Default heartbeat interval for GSM is 60
 // If you want override this value, uncomment and set this option:
