@@ -23,6 +23,19 @@ This is a minimalist Blynk App you will 1,800 energy points.
 
 * Enjoy my app!
 
+## Content
+
+1. [TODO](/README.md#TODO)
+2. [How does it work?](/README.md#how-does-it-work)
+3. [Estimated Power Consumption](/README.md#Estimated-Power-Consumption)
+4. [Cellular data usage](/README.md#cellular-data-usage)
+5. [SARA-R4 PWR_ON Pin](/README.md#SARA-R4-PWR_ON-Pin)
+6. [SARA-R4 PSM - Power Save Mode configuration](/README.md#sara-r4-psm---power-save-mode-configuration)
+7. [Schematic](/README.md#schematic)
+8. [DataSheets](/README.md#datasheets)
+9. [How to Start?](/README.md#how-to-start)
+10. [Credits](/README.md#credits)
+
 ## TODO
 
 - [x] Put device to sleep;
@@ -35,6 +48,70 @@ This is a minimalist Blynk App you will 1,800 energy points.
 - [ ] Monitor SARA GPIO in order to detect modem is ready +UGPIOC
 - [ ] Monitor SARA V_INT in order to detect modem ON
 - [ ] Monitor GNSS *something* in order to detect GNSS awake
+
+## How does it work?
+
+Here you will find a simplified flowchart demonstrating how the code works: 
+
+![Flowchart](./pics/flowchart.jpg)
+
+## Estimated Power Consumption
+
+This is hard to predict however we have the [Datasheets](./datasheet) and can roughly estimate it, we have:
+* ATSAMD21E18 MCU;
+* SARA-R412;
+* SAM-M8Q;
+* LIS3DH IMU;
+* TXS0102 Level-shifter;
+* SN74LVC1G07 Level-shifter;
+* HT7833 LDO;
+* TP4056 Battery charger;
+* Battery ADC;
+
+#### Low power - Sleeping
+
+Component                 | ~TYP μA
+------------------------- | ------
+ATSAMD21E18 MCU           | 4
+SARA-R412                 | 6
+SAM-M8Q                   | 15
+LIS3DH IMU                | 2
+TXS0102 Level-shifter     | 2
+SN74LVC1G07 Level-shifter | 5
+HT7833 LDO                | Assume 10
+TP4056 Battery charger    | 2
+Battery ADC               | 2
+TOTAL                     | 48
+
+#### Tracking
+
+Component                 | ~TYP μA
+------------------------- | ------
+ATSAMD21E18 MCU           | 4,000
+SARA-R412                 | 27,200*
+SAM-M8Q                   | 9,500
+LIS3DH IMU                | 2
+TXS0102 Level-shifter     | 14
+SN74LVC1G07 Level-shifter | 5
+HT7833 LDO                | Assume 10
+TP4056 Battery charger    | 2
+Battery ADC               | 2
+TOTAL                     | ~41mA
+
+*Current for Modem depends on the update interval, registration and signal level -> 200mA max for TX/RX @30sec to exec every 300 sec + 9mA @Active mode = 27.2mA 
+
+## Cellular data usage
+
+[Blynk Protocol message](https://github.com/blynkkk/blynk-server/blob/master/docs/README_FOR_APP_DEVS.md#protocol-messages)
+
+* [Blynk HEARTBEAT](https://community.blynk.cc/t/expected-data-usage-for-hardware-connection-heartbeat-to-blynk-server/7138/16) = 5 bytes every minute;
+* [Button message](https://community.blynk.cc/t/solved-gsm-data-usage/16122/2?u=ldb) = ~10 bytes
+* [Data message](https://community.blynk.cc/t/blynk-electron-data-usage-extremely-high/16577/4?u=ldb) = ~14 bytes
+* [TCP Overhead?](https://community.blynk.cc/t/expected-data-usage-for-hardware-connection-heartbeat-to-blynk-server/7138/16) = 20 bytes
+
+If it connects twice a day non-active => ( Clear Map + Active? + Update Battery ) * 2 = bump it up to 80 bytes/day
+
+Active mode running at 300 seconds => ( 5 * Heartbeat + Active? + Update Battery + Send location )* 12 = 800 bytes/hour
 
 ## SARA-R4 PWR_ON Pin
 
@@ -103,5 +180,7 @@ You can find technical information here: [datasheets](./datasheet)
 ## Credits
 
 Github Shields and Badges created with [Shields.io](https://github.com/badges/shields/)
+
+Flowchart made with [VISME](https://www.visme.co/)
 
 Icons made by [Smashicons](https://www.flaticon.com/authors/smashicons) from [Flaticon](www.flaticon.com) is licensed by Creative Commons BY 3.0 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
