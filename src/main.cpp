@@ -61,7 +61,10 @@ const char auth[] = "YourAuthToken";
 LIS3DH myIMU(0x19);
 
 // Modem declaration, using SerialX interface.
-TinyGsm modem(Serial_SARA);
+TinyGsm modem( Serial_SARA );
+
+// u-blox GNSS declaration
+GNSS gnss( Serial_GNSS );
 
 // Blynk declarations;
 WidgetMap myMap(V0);
@@ -72,7 +75,9 @@ bool batteryNotify, moveNotify = true;
 
 int loc_index, active, clear = 0;
 
-float lat, lon, batt;
+float lat, lon, batt, acc;
+
+fixType_t fix = NO_FIX;
 
 uint16_t sampleRate = 1;  //Samples per second (Hz) - 1, 10, 25, 50, 100, 200, 400, 1600, 5000
 uint8_t accelRange = 2;   //Accelerometer range = 2, 4, 8, 16g
@@ -98,17 +103,8 @@ void sendBattery( void );
 // IMU detects movement for certain period of time therefore active peripherals and tracking
 void onlineMode( void );
 
-// Start and configure GNSS module
-bool startGNSS( void ); 
-
-// Get coordinates after Interrupt -> Connect to the App and check button.
+// Get coordinates function as timer requires void
 void getCoordinates( void );
-
-// Turn GNSS off -> UBX-RXM-PMREQ
-bool gnssOff( void );
-
-// Send each coordinate with date and time identifier, example 15/2 - 16:20
-void sendCoord( void );
 
 // Request Blynk server to re-send latest values for all pins in case hardware reset or 
 // lose input status and to allow Clear command when hardware is offline/sleeping
@@ -122,18 +118,17 @@ BLYNK_WRITE(V2)
   active = param.asInt();
   if( active )
   {
-    // Initialize GNSS read every x seconds
-    startGNSS();
-
+    gnss.init( ON_OFF, 280000, 10);
+    
     if( moveNotify )
     {
       String emailBody = String("<p>Asset is moving, check the app for location.</p><p>Battery = ")
-                               + String(batt,2) + "V.";
+                               + String(batt,2) + "V.</p>";
       Blynk.email("🚨 Asset Moving 🏃", emailBody);
       moveNotify = false;      
     }
 
-    timer.setTimeout(60L, getCoordinates);
+    getCoordinates();
     sendFreq = timer.setInterval(300L, getCoordinates);
   }
   else
@@ -143,28 +138,6 @@ BLYNK_WRITE(V2)
     goodNightMOVE();
   }
   
-}
-
-bool startGNSS( void )
-{
-  Serial_GNSS.write(0xFF);   // Send something to wake GNSS
-
-  // Disable NMEA, Enable UBX over UART1 and Baud rate 9600
-  byte message[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00,
-                    0x80, 0x25, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9A, 0x79};
-  while( Serial_GNSS.availableForWrite() < 30 );
-
-  bool ret = Serial_GNSS.write(message, sizeof(message)) ? true : false;
-
-  // Set GNSS to power save move, Agressive power mode 2Hz;
-  byte confmessage[] = {0xB5, 0x62, 0x06, 0x86, 0x08, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x98, 0x76};
-  while( Serial_GNSS.availableForWrite() < 18 );
-
-  ret &= Serial_GNSS.write(confmessage, sizeof(confmessage));
-
-  return ret;
-
 }
 
 BLYNK_WRITE(V3)
@@ -183,49 +156,13 @@ BLYNK_WRITE(V10)
   loc_index = param.asInt();
 }
 
-// GPS Libraries https://github.com/loginov-rocks/UbxGps?utm_source=platformio&utm_medium=piohome
-// or https://github.com/bolderflight/UBLOX
-// or https://playground.arduino.cc/UBlox/GPS
-
-// U-BLOX reference @ https://os.mbed.com/teams/ublox/?utm_source=platformio&utm_medium=piohome
-
-void sendCoord()
-{
-  String dateTime = String(day()) + "/" + month() + "-" + hour() + ":" + minute();
-  myMap.location(loc_index, lat, lon, dateTime);
-  loc_index++;
-  Blynk.virtualWrite(V10, loc_index);
-}
-
 void getCoordinates()
 {
-  Serial_GNSS.write(0xFF);   // Send something to wake GNSS
-  delay(100);                // Wait a bit for start
-
-  // GET COORDINATES
-
+  gnss.getCoodinates(lon, lat, fix, acc, 50);
   // Keep track of battery and change frequency if low
   sendBattery();
   if( !batteryNotify )
     timer.changeInterval(sendFreq, 1800L);
-
-}
-
-bool gnssOff()
-{
-  // Turn GNSS off -> UBX-RXM-PMREQ -> first send dumb data to make sure its on
-  Serial_GNSS.write(0xFF);
-  delay(500);
-  byte message[] = {0xB5, 0x62, 0x02, 0x41, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x61, 0x6B};
-
-  // Check if can write the command, !!! may not need it
-  while( Serial_GNSS.availableForWrite() < 28 );
-
-  bool ret = Serial_GNSS.write(message, sizeof(message)) ? true : false;
-  
-  return ret;
-
 }
 
 void sendBattery()
@@ -239,7 +176,7 @@ void sendBattery()
 
   batt /= 10.0f;
 
-  // Battery levels to be defined;
+  // TODO - Battery levels to be defined;
   // currently based on https://github.com/ldab/WimB/blob/master/datasheet/GMB052030.pdf
   if( batt > 3.8 ){
       Blynk.virtualWrite(V4, 4);
@@ -340,8 +277,11 @@ void setup()
   //delay(3000);
   delay(10);
 
+  // Initialize GNSS read every x seconds
+  Serial_GNSS.begin( 9600 );
+
   // When power reset GNSS auto goes on, turn it off;
-  gnssOff();
+  gnss.off();
 
   // Interrupt 1 to detect when it's moving -> PA00 pin 8
   pinMode(PIN_INT1, INPUT);
@@ -375,10 +315,9 @@ void onlineMode()
   digitalWrite(PWR_ON, HIGH);
   delay(2000); // alow few seconds for modem to turn ON
   
-  // Restart takes quite some time
-  // To skip it, call init() instead of restart()
+  // Initialize modem as restart had many invalid parameters for R412
   Serial.println("Initializing modem...");
-  modem.restart();
+  modem.init();
 
   // TinyGSM Lib does not use the right APN set@ https://github.com/vshymanskyy/TinyGSM/issues/244
   char apnConfig[] = "AT+CGDCONT=1,\"IP\",\"";
@@ -394,9 +333,8 @@ void onlineMode()
   // Unlock your SIM card with a PIN
   //modem.simUnlock("1234");
 
-  //This can take quite some time, do something else
-  //Try Blynk.config(auth);
-  Blynk.begin(auth, modem, apn, user, pass);
+  Blynk.config(modem, auth);
+  //Blynk.begin(auth, modem, apn, user, pass);
 
   detachInterrupt(PIN_INT1);
 

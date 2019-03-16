@@ -32,3 +32,4 @@
 #include <WidgetRTC.h>
 
 #include "lis3dh-motion-detection.h"
+#include "ublox_GNSS.h"

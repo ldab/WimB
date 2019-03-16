@@ -33,6 +33,7 @@ This is a minimalist Blynk App you will 1,800 energy points.
 6. [SARA-R4 PSM - Power Save Mode configuration](/README.md#sara-r4-psm---power-save-mode-configuration)
 7. [Schematic](/README.md#schematic)
 8. [DataSheets](/README.md#datasheets)
+9. [Enclosure](/README.md#enclosure)
 9. [How to Start?](/README.md#how-to-start)
 10. [Credits](/README.md#credits)
 
@@ -173,6 +174,12 @@ Other values shall be interpreted as multiples of 1 minute in this version of th
 
 You can find technical information here: [datasheets](./datasheet)
 
+## Enclosure
+
+A 3D print file for the enclosure is also available (untestest/not printed) [here](./3DPrint Enclosure).
+
+![enclosure](./3DPrint Enclosure/Enclosure.png)
+
 ## How to start?
 
 
@@ -182,5 +189,7 @@ You can find technical information here: [datasheets](./datasheet)
 Github Shields and Badges created with [Shields.io](https://github.com/badges/shields/)
 
 Flowchart made with [VISME](https://www.visme.co/)
+
+3D Design inspired by [Adafruit Youtube video](https://www.youtube.com/watch?v=VVmOtM60VWw) using [Autodesk Fusin 360](https://www.autodesk.com/products/fusion-360/overview)
 
 Icons made by [Smashicons](https://www.flaticon.com/authors/smashicons) from [Flaticon](www.flaticon.com) is licensed by Creative Commons BY 3.0 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)

@@ -30,6 +30,7 @@ install:
     # Time, TinyGSM, Blynk
     - platformio lib -g install 44 1287 415
     - platformio lib -g install https://github.com/ldab/lis3dh-motion-detection
+    - platformio lib -g install https://github.com/ldab/u-blox_GNSS
 
 script:
     - platformio run
