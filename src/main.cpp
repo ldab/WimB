@@ -129,7 +129,7 @@ BLYNK_WRITE(V2)
     }
 
     getCoordinates();
-    sendFreq = timer.setInterval(300L, getCoordinates);
+    sendFreq = timer.setInterval(60000L, getCoordinates);
   }
   else
   {
@@ -158,11 +158,16 @@ BLYNK_WRITE(V10)
 
 void getCoordinates()
 {
-  gnss.getCoodinates(lon, lat, fix, acc, 50);
+  if( gnss.getCoodinates(lon, lat, fix, acc, 50) )
+  {
+    String dateTime = String(day()) + "/" + month() + "-" + hour() + ":" + minute();
+    myMap.location(loc_index, lat, lon, dateTime);
+    loc_index++;
+  }
   // Keep track of battery and change frequency if low
   sendBattery();
   if( !batteryNotify )
-    timer.changeInterval(sendFreq, 1800L);
+    timer.changeInterval(sendFreq, 300000L);
 }
 
 void sendBattery()
