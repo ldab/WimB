@@ -1,17 +1,16 @@
 # WimB - Where is my Bike
 
-This is a minimalist Blynk App you will 1,800 energy points.
-
 <p>The firmware has been writen using PlatformIO which is a nice, neat IDE, check it out:&nbsp;<a href="https://platformio.org/platformio-ide" rel="nofollow">Learn how to install PlatformIO IDE</a></p>
 
 [![GitHub version](https://img.shields.io/github/release/ldab/wimb.svg)](https://github.com/ldab/wimb/releases/latest)
 [![Build Status](https://travis-ci.org/ldab/WimB.svg?branch=master)](https://travis-ci.org/ldab/WimB)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/ldab/wimb.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/ldab/wimb/blob/master/LICENSE)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ldab/wimb.svg?style=social)
 
 ## Download Blynk App: [Getting Started with Blynk](https://www.blynk.cc/getting-started/)
+
+This is a minimalist Blynk App you will **1,800 energy points**.
 
 * Download Blynk App: [](http://j.mp/blynk_Android) [](http://j.mp/blynk_iOS)
 * Touch the QR-code icon and point the camera to the code below
@@ -70,6 +69,20 @@ This is hard to predict however we have the [Datasheets](./datasheet) and can ro
 * Battery ADC;
 
 #### Low power - Sleeping
+
+Arduino library set all pins as `INPUT` on `wiring.c` this result in excessive current draw, I got around 300μA on the best case scenario, turning all Clock off, VREG, and BOD33.
+
+```
+  // Setup all pins (digital and analog) in INPUT mode (default is nothing)
+  for (uint32_t ul = 0 ; ul < NUM_DIGITAL_PINS ; ul++ )
+  {
+    pinMode( ul, INPUT ) ;
+  }
+```
+
+it we change SWCLK & SWDIO to `pinMode( ul, INPUT_PULLUP ) ;` **BOOM** -> board current on sleep was spot on 48μA.
+
+![](./pics/sleep_current.jpg)
 
 Component                 | ~TYP μA
 ------------------------- | ------
@@ -176,9 +189,9 @@ You can find technical information here: [datasheets](./datasheet)
 
 ## Enclosure
 
-A 3D print file for the enclosure is also available (untestest/not printed) [here](./3DPrint Enclosure).
+A 3D print file for the enclosure is also available (untestest/not printed) [here](./3DPrint%20Enclosure).
 
-![enclosure](./3DPrint Enclosure/Enclosure.png)
+![enclosure](./3DPrint%20Enclosure/Enclosure.png)
 
 ## How to start?
 
