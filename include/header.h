@@ -1,5 +1,4 @@
 #include "Arduino.h"
-//#include "Wire.h"
 #include "wiring_private.h"
 
 /* Comment this out to disable prints and save space */
@@ -30,11 +29,6 @@
 #include <BlynkSimpleTinyGSM.h>
 #include <TimeLib.h>
 #include <WidgetRTC.h>
-
-#define PIN_WIRE_SDA         (5u)
-#define PIN_WIRE_SCL         (6u)
-#define PERIPH_WIRE          sercom0
-#define WIRE_IT_HANDLER      SERCOM0_Handler
 
 #include "lis3dh-motion-detection.h"
 #include "ublox_GNSS.h"

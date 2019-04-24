@@ -24,11 +24,13 @@ SOFTWARE. */
 #include "ublox_GNSS.h"
 //#include <Adafruit_SleepyDog.h>
 
-// The pins will change on the next Hardware version
-#define PIN_INT1          7
-#define PIN_INT2          8
-#define BATT              23
+// PIN re-definition
+#define PIN_INT1          (18u)   // PA06
+#define PIN_INT2          (17u)   // PA07
+#define BATT              (14ul)  // PA02 -> A0
+#define PWR_ON            (20ul)  // PA31 -> SWDIO
 #define LED               12
+#define SWCLK             19
 
 void goodNight( void );
 void goodMorning( void );
@@ -42,7 +44,7 @@ void SERCOM2_Handler()
   Serial_GNSS.IrqHandler();
 }
 
-Uart Serial_SARA(&sercom1, 25, 24, SERCOM_RX_PAD_1, UART_TX_PAD_0);
+Uart Serial_SARA(&sercom1, 8, 7, SERCOM_RX_PAD_1, UART_TX_PAD_0);
 
 void SERCOM1_Handler()
 {
@@ -193,32 +195,26 @@ void setup() {
   * Line 107 -> INPUT_PULLUP reduces the current significantly
   * SWCLK & SWDIO when Pulled UP reduces the sleep current               
   * ***********************************************************************/
-  pinMode( 19, INPUT_PULLUP );
-  pinMode( 20, INPUT_PULLUP );
+  pinMode( SWCLK, INPUT_PULLUP );
+
+  // Control SARA Module
+  pinMode(PWR_ON, OUTPUT);
+  digitalWrite(PWR_ON, LOW);
 
   pinMode( LED, OUTPUT );
   digitalWrite( LED, LOW );
-
-  // Power ON pin, included here for test only
-  pinMode( A3, OUTPUT );
-  digitalWrite( A3, LOW );
   
-  // Compare battery measurement
-  // pinMode( A0, INPUT);
+  // Battery measurement
   pinMode( BATT, INPUT);
 
-  // PA00 and PA01 have wrong Interrupt numbers on variant.cpp
-  // g_APinDescription[PIN_INT1].ulExtInt = EXTERNAL_INT_0;
-  // g_APinDescription[PIN_INT2].ulExtInt = EXTERNAL_INT_1;
   pinMode( PIN_INT1, INPUT_PULLDOWN );
   pinMode( PIN_INT2, INPUT_PULLDOWN );
+  //attachInterrupt(PIN_INT1, goodMorning, HIGH);
+  //attachInterrupt(PIN_INT2, goodMorning, HIGH);
 
-  // attachInterrupt(PIN_INT1, goodMorning, RISING);
-  // attachInterrupt(PIN_INT2, goodMorning, RISING);
-
-  // Interrupt 1 to detect when it's moving -> PA00 pin 8
-  pinMode(A0, INPUT_PULLDOWN);
-  //attachInterrupt(A0, goodMorning, HIGH);
+  // map PINs to SERCOM ALT for SARA UART
+  pinPeripheral(7, PIO_SERCOM_ALT);
+  pinPeripheral(8, PIO_SERCOM_ALT);
 
   // Serial GNSS PIN attribute
   pinPeripheral(21, PIO_SERCOM);
@@ -227,13 +223,14 @@ void setup() {
   Serial.begin( 9600 );
 
   Serial_GNSS.begin( 9600 );
+  delay(2000);
   
   // Send something to make sure GNSS is awake
   Serial_GNSS.write(0xFF);
   Serial_GNSS.flush();
 
   // gnss.init( ON_OFF, 280000, 6);
-  // gnss.init( PSM_1HZ );
+  gnss.init( PSM_1HZ );
 
   turnoff.start();
   // checkBat.start();
@@ -273,6 +270,15 @@ void battery()
 
   Serial.println("Batt PA02 = " + String( batt_PA02, 2 ));
   Serial.println("Batt PA03 = " + String( batt_PA03, 2 ) + "\n");
+}
+
+void SWtoggle()
+{
+  Serial.println("Toggle");
+  //digitalWrite( SWDIO, !digitalRead( SWDIO ) );
+  // Not a good idea to use SWCLK as Output as it needs to be High on power up
+  // http://ww1.microchip.com/downloads/en/DeviceDoc/SAMD21-Family-DataSheet-DS40001882D.pdf#_OPENTOPIC_TOC_PROCESSING_d115e33697
+  // digitalWrite( SWCLK, !digitalRead( SWCLK ) );
 }
 
 void loop()
