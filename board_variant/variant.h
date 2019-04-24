@@ -53,11 +53,11 @@ extern "C"
  *----------------------------------------------------------------------------*/
 
 // Number of pins defined in PinDescription array
-#define PINS_COUNT           (25u)
-#define NUM_DIGITAL_PINS     (24u)
-#define NUM_ANALOG_INPUTS    (6u)
+#define PINS_COUNT           (22u)
+#define NUM_DIGITAL_PINS     (22u)
+#define NUM_ANALOG_INPUTS    (5u)
 #define NUM_ANALOG_OUTPUTS   (1u)
-#define analogInputToDigitalPin(p)  ((p < 6u) ? (p) + PIN_A0 : -1)
+#define analogInputToDigitalPin(p)  ((p < 5u) ? (p) + PIN_A0 : -1)
 
 #define digitalPinToPort(P)        ( &(PORT->Group[g_APinDescription[P].ulPort]) )
 #define digitalPinToBitMask(P)     ( 1 << g_APinDescription[P].ulPin )
@@ -97,7 +97,6 @@ extern "C"
 #define PIN_A3               (PIN_A0 + 3)
 #define PIN_A4               (PIN_A0 + 4)
 #define PIN_DAC0             PIN_A0
-#define PIN_BATT             (23ul)
 
 static const uint8_t A0  = PIN_A0;
 static const uint8_t A1  = PIN_A1;
@@ -105,7 +104,6 @@ static const uint8_t A2  = PIN_A2;
 static const uint8_t A3  = PIN_A3;
 static const uint8_t A4  = PIN_A4;
 static const uint8_t DAC0 = PIN_DAC0;
-static const uint8_t BATT = PIN_BATT;
 
 #define ADC_RESOLUTION		12
 
@@ -141,10 +139,10 @@ static const uint8_t SCK  = PIN_SPI_SCK ;
  */
 #define WIRE_INTERFACES_COUNT 1
 
-#define PIN_WIRE_SDA         (0u)
-#define PIN_WIRE_SCL         (2u)
-#define PERIPH_WIRE         sercom0
-#define WIRE_IT_HANDLER     SERCOM0_Handler
+#define PIN_WIRE_SDA         (5u)
+#define PIN_WIRE_SCL         (6u)
+#define PERIPH_WIRE          sercom0
+#define WIRE_IT_HANDLER      SERCOM0_Handler
 
 static const uint8_t SDA = PIN_WIRE_SDA;
 static const uint8_t SCL = PIN_WIRE_SCL;
@@ -201,4 +199,3 @@ extern Uart Serial1;
 #define SERIAL_PORT_HARDWARE_OPEN   Serial1
 
 #endif /* _VARIANT_ARDUINO_ZERO_ */
-
