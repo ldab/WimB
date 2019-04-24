@@ -30,11 +30,12 @@ This is a minimalist Blynk App you will **1,800 energy points**.
 4. [Cellular data usage](/README.md#cellular-data-usage)
 5. [SARA-R4 PWR_ON Pin](/README.md#SARA-R4-PWR_ON-Pin)
 6. [SARA-R4 PSM - Power Save Mode configuration](/README.md#sara-r4-psm---power-save-mode-configuration)
-7. [Schematic](/README.md#schematic)
-8. [DataSheets](/README.md#datasheets)
-9. [Enclosure](/README.md#enclosure)
-9. [How to Start?](/README.md#how-to-start)
-10. [Credits](/README.md#credits)
+7. [SERCOM and PIN mapping](/README.md#SERCOM-and-PIN-mapping)
+8. [Schematic](/README.md#schematic)
+9. [DataSheets](/README.md#datasheets)
+10. [Enclosure](/README.md#enclosure)
+11. [How to Start?](/README.md#how-to-start)
+12. [Credits](/README.md#credits)
 
 ## TODO
 
@@ -178,7 +179,21 @@ Other values shall be interpreted as multiples of 1 minute in this version of th
 
 **Requested Active Time value (T3324) iscoded as one byte (octet 3) of the GPRS Timer 2 information element coded as bitformat (e.g. "00100100" equals 4 minutes).  see the GPRS Timer 2 IE in 3GPP TS 24.008 Table10.5.163/3GPP TS 24.008 - page 668**
 
+## SERCOM and PIN mapping
+
+PIN mapping and re-assignment are required since we need 3x UART and unfortunatelly Adafruit Trinket M0 did not use the same combination as we needed/wanted.
+
+Those changes are made on the `variant.h` and `variant.cpp` found on your installation directory `.platformio\packages\framework-arduinosam\variants\trinket_m0`.
+
+On the `.cpp` file we comment the `Serial1` definition as `SERCOM0` will be used by the I2C interface:
+https://github.com/ldab/WimB/blob/5da6a90e527ac1eb7648ca4fd2846885c14b10b4/board_variant/variant.cpp#L97-L102
+
+The `.h` file we define `SERCOM0` as the interface for I2C, as well different PIN because of `SERCOM` and `SERCOM_ALT` definition
+https://github.com/ldab/WimB/blob/5da6a90e527ac1eb7648ca4fd2846885c14b10b4/board_variant/variant.h#L142-L145
+
 ## Schematic
+
+* The Schematics provided here are provided "as it is" and no guarantee is given as it does not follow the supplier specifications especially on the antenna design:
 
 ![Schematic page 1](./schematic/wimb.png)
 ![Schematic page 2](./schematic/wimb_2.png)
